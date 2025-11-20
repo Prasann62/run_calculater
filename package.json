@@ -1,5 +1,6 @@
 {
   "name": "cricket",
+  "homepage": "https://prasanna.techmerise.com/cricket/",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
