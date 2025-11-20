@@ -382,3 +382,462 @@ body {
 
   /* 5 full rotations */
 }
+
+/* Cricket Action Animations */
+@keyframes batsmanSwing {
+  0% {
+    transform: rotate(-45deg) translateX(-10px);
+  }
+
+  50% {
+    transform: rotate(45deg) translateX(10px);
+  }
+
+  100% {
+    transform: rotate(0deg) translateX(0);
+  }
+}
+
+@keyframes ballFly {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: translateY(-100px) scale(0.5);
+    opacity: 0.7;
+  }
+
+  100% {
+    transform: translateY(-200px) scale(0.2);
+    opacity: 0;
+  }
+}
+
+@keyframes boundaryFlash {
+
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+    transform: scale(1);
+  }
+
+  50% {
+    box-shadow: 0 0 40px rgba(255, 215, 0, 1), 0 0 60px rgba(255, 165, 0, 0.8);
+    transform: scale(1.3);
+  }
+}
+
+@keyframes wicketFall {
+  0% {
+    transform: rotate(0deg) translateY(0);
+    opacity: 1;
+  }
+
+  25% {
+    transform: rotate(15deg) translateY(5px);
+  }
+
+  50% {
+    transform: rotate(-15deg) translateY(10px);
+  }
+
+  75% {
+    transform: rotate(10deg) translateY(15px);
+  }
+
+  100% {
+    transform: rotate(90deg) translateY(20px);
+    opacity: 0.3;
+  }
+}
+
+@keyframes fireworks {
+  0% {
+    box-shadow:
+      0 0 0 0 rgba(255, 215, 0, 1),
+      0 0 0 0 rgba(255, 165, 0, 1),
+      0 0 0 0 rgba(255, 69, 0, 1);
+  }
+
+  50% {
+    box-shadow:
+      0 -30px 20px -10px rgba(255, 215, 0, 0),
+      30px 0 20px -10px rgba(255, 165, 0, 0),
+      -30px 0 20px -10px rgba(255, 69, 0, 0);
+  }
+
+  100% {
+    box-shadow:
+      0 -60px 40px -20px rgba(255, 215, 0, 0),
+      60px 0 40px -20px rgba(255, 165, 0, 0),
+      -60px 0 40px -20px rgba(255, 69, 0, 0);
+  }
+}
+
+@keyframes stumpsShake {
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  10% {
+    transform: translateX(-5px) rotate(-2deg);
+  }
+
+  20% {
+    transform: translateX(5px) rotate(2deg);
+  }
+
+  30% {
+    transform: translateX(-5px) rotate(-2deg);
+  }
+
+  40% {
+    transform: translateX(5px) rotate(2deg);
+  }
+
+  50% {
+    transform: translateX(-3px) rotate(-1deg);
+  }
+
+  60% {
+    transform: translateX(3px) rotate(1deg);
+  }
+
+  70% {
+    transform: translateX(-2px);
+  }
+
+  80% {
+    transform: translateX(2px);
+  }
+
+  90% {
+    transform: translateX(-1px);
+  }
+}
+
+/* Apply animations to ball tags */
+.ball6 {
+  position: relative;
+  overflow: visible;
+}
+
+.ball6:hover {
+  animation: boundaryFlash 0.6s ease-in-out, batsmanSwing 0.5s ease-in-out;
+}
+
+.ball6::after {
+  content: '🏏';
+  position: absolute;
+  top: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.2rem;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.ball6:hover::after {
+  opacity: 1;
+  animation: ballFly 1s ease-out;
+}
+
+.ball4 {
+  position: relative;
+  overflow: visible;
+}
+
+.ball4:hover {
+  animation: boundaryFlash 0.5s ease-in-out;
+}
+
+.ball4::before {
+  content: '⚡';
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1rem;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.ball4:hover::before {
+  opacity: 1;
+  animation: fireworks 0.8s ease-out;
+}
+
+.ballW {
+  position: relative;
+  overflow: visible;
+}
+
+.ballW:hover {
+  animation: wicketFall 0.8s ease-in-out;
+}
+
+.ballW::after {
+  content: '🎯';
+  position: absolute;
+  top: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.2rem;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.ballW:hover::after {
+  opacity: 1;
+  animation: stumpsShake 0.6s ease-in-out;
+}
+
+/* Batsman celebration on score update */
+@keyframes celebrate {
+
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+
+  25% {
+    transform: scale(1.1) rotate(-5deg);
+  }
+
+  75% {
+    transform: scale(1.1) rotate(5deg);
+  }
+}
+
+.score-text {
+  transition: all 0.3s ease;
+}
+
+/* Add this class dynamically when score updates */
+.score-celebrating {
+  animation: celebrate 0.5s ease-in-out;
+}
+
+/* Action Animation Overlay */
+.action-animation-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  pointer-events: none;
+  animation: overlayFadeIn 0.3s ease-out;
+}
+
+.action-animation-overlay.six {
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.3) 0%, rgba(255, 165, 0, 0.2) 50%, transparent 100%);
+}
+
+.action-animation-overlay.four {
+  background: radial-gradient(circle, rgba(132, 250, 176, 0.3) 0%, rgba(143, 211, 244, 0.2) 50%, transparent 100%);
+}
+
+/* TV Style Walking Duck Animation */
+.action-animation-overlay.wicket {
+  background: rgba(0, 0, 0, 0.4);
+  align-items: flex-end;
+  padding-bottom: 80px;
+  overflow: hidden;
+}
+
+.action-animation-content {
+  text-align: center;
+  animation: contentPopIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.wicket .action-animation-content {
+  position: absolute;
+  right: -250px;
+  animation: duckWalk 5s linear forwards;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Add a slight bounce to the whole container for weight */
+  transform-origin: bottom center;
+}
+
+.animation-emoji {
+  font-size: 8rem;
+  margin-bottom: 1rem;
+  animation: emojiSpin 0.6s ease-out;
+  filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.3));
+}
+
+.wicket .animation-emoji {
+  font-size: 12rem;
+  margin-bottom: 10px;
+  /* Complex waddle: Rocking + Bobbing */
+  animation: duckWaddle 0.6s infinite ease-in-out;
+  filter: drop-shadow(0 10px 10px rgba(0,0,0,0.3));
+  z-index: 2;
+}
+
+/* Dynamic Shadow under the duck */
+.wicket .animation-emoji::after {
+  content: '';
+  position: absolute;
+  bottom: 10px;
+  left: 20%;
+  width: 60%;
+  height: 20px;
+  background: rgba(0,0,0,0.3);
+  border-radius: 50%;
+  z-index: -1;
+  animation: shadowPulse 0.6s infinite ease-in-out;
+}
+
+.animation-text {
+  font-size: 4rem;
+  font-weight: 900;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+  animation: textPulse 0.5s ease-out;
+}
+
+.six .animation-text {
+  background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.four .animation-text {
+  background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.wicket .animation-text {
+  font-size: 3rem;
+  color: #fff;
+  text-shadow: 2px 2px 0 #000;
+  margin-top: -20px;
+  background: none;
+  -webkit-text-fill-color: white;
+}
+
+.animation-subtext {
+  font-size: 1.5rem;
+  font-weight: 600;
+  opacity: 0.8;
+  animation: subtextSlide 0.5s ease-out 0.2s both;
+}
+
+.wicket .animation-subtext {
+  background: red;
+  color: white;
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 1.2rem;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.dark-theme .animation-subtext {
+  color: #f1f5f9;
+}
+
+.light-theme .animation-subtext {
+  color: #1e293b;
+}
+
+@keyframes overlayFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes contentPopIn {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes emojiSpin {
+  0% {
+    transform: rotate(0deg) scale(0.5);
+    opacity: 0;
+  }
+
+  50% {
+    transform: rotate(180deg) scale(1.2);
+  }
+
+  100% {
+    transform: rotate(360deg) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes textPulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes subtextSlide {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 0.8;
+  }
+}
+
+@keyframes duckWalk {
+  0% {
+    right: -200px;
+  }
+
+  100% {
+    right: 100%;
+    /* Walk all the way across */
+  }
+}
+
+@keyframes duckWaddle {
+  0% {
+    transform: rotate(-10deg) translateY(0);
+  }
+
+  100% {
+    transform: rotate(10deg) translateY(-10px);
+  }
+}
