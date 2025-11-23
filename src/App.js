@@ -21,6 +21,10 @@ export default function App() {
   const [teamB, setTeamB] = useState(() => loadState("teamB", "Team B"));
   const [battingFirst, setBattingFirst] = useState(() => loadState("battingFirst", "Team A"));
 
+  // Rules
+  const [wideRunEnabled, setWideRunEnabled] = useState(() => loadState("wideRunEnabled", true));
+  const [noBallRunEnabled, setNoBallRunEnabled] = useState(() => loadState("noBallRunEnabled", true));
+
   // Theme
   const [dark, setDark] = useState(() => loadState("dark", false));
 
@@ -43,8 +47,8 @@ export default function App() {
 
   // Innings Score
   const [target, setTarget] = useState(() => loadState("target", null));
-  const [innings1Score, setInnings1Score] = useState(() => loadState("innings1Score", { runs: null, wickets: null, overs: null }));
-  const [innings2Score, setInnings2Score] = useState(() => loadState("innings2Score", { runs: null, wickets: null, overs: null }));
+  const [innings1Score, setInnings1Score] = useState(() => loadState("innings1Score", { runs: null, wickets: null, overs: null, history: [] }));
+  const [innings2Score, setInnings2Score] = useState(() => loadState("innings2Score", { runs: null, wickets: null, overs: null, history: [] }));
 
   const maxBalls = totalOvers * 6;
   const overs = `${Math.floor(balls / 6)}.${balls % 6}`;
@@ -72,7 +76,9 @@ export default function App() {
     localStorage.setItem("target", JSON.stringify(target));
     localStorage.setItem("innings1Score", JSON.stringify(innings1Score));
     localStorage.setItem("innings2Score", JSON.stringify(innings2Score));
-  }, [innings, totalOvers, matchStarted, teamA, teamB, battingFirst, dark, runs, wickets, balls, ballHistory, overHistory, matchResult, lastMatch, target, innings1Score, innings2Score]);
+    localStorage.setItem("wideRunEnabled", JSON.stringify(wideRunEnabled));
+    localStorage.setItem("noBallRunEnabled", JSON.stringify(noBallRunEnabled));
+  }, [innings, totalOvers, matchStarted, teamA, teamB, battingFirst, dark, runs, wickets, balls, ballHistory, overHistory, matchResult, lastMatch, target, innings1Score, innings2Score, wideRunEnabled, noBallRunEnabled]);
 
   // RECORD BALL — FIXED (NO DUPLICATE RUNS & IMMUTABLE UPDATES)
   const recordBall = (action, run, legal = true) => {
@@ -119,8 +125,13 @@ export default function App() {
   // Extra
   const addExtra = (type, r) => {
     if (matchResult) return;
-    setRuns(prev => prev + r);
-    recordBall(type, r, false);
+
+    let runsToAdd = r;
+    if (type === "Wd" && !wideRunEnabled) runsToAdd = 0;
+    if (type === "NB" && !noBallRunEnabled) runsToAdd = 0;
+
+    setRuns(prev => prev + runsToAdd);
+    recordBall(type, runsToAdd, false);
   };
 
   // Wicket
@@ -172,7 +183,7 @@ export default function App() {
   // End Innings
   const endInnings = () => {
     if (innings === 1) {
-      setInnings1Score({ runs, wickets, overs });
+      setInnings1Score({ runs, wickets, overs, history: overHistory });
       setTarget(runs + 1);
 
       setInnings(2);
@@ -182,7 +193,7 @@ export default function App() {
       setBallHistory([]);
       setOverHistory([]);
     } else {
-      setInnings2Score({ runs, wickets, overs });
+      setInnings2Score({ runs, wickets, overs, history: overHistory });
 
       let result = "";
       const chasingTeam = currentBattingTeam;
@@ -283,8 +294,8 @@ export default function App() {
     setMatchResult("");
     setMatchStarted(false);
     setInnings(1);
-    setInnings1Score({ runs: null, wickets: null, overs: null });
-    setInnings2Score({ runs: null, wickets: null, overs: null });
+    setInnings1Score({ runs: null, wickets: null, overs: null, history: [] });
+    setInnings2Score({ runs: null, wickets: null, overs: null, history: [] });
   };
 
   const startSuperOver = () => {
@@ -424,6 +435,32 @@ export default function App() {
               </div>
             </div>
 
+            <div className="mb-4 text-start">
+              <label className="form-label small text-muted">Match Rules</label>
+              <div className="d-flex gap-3">
+                <div className="form-check form-switch">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    id="wideRule"
+                    checked={wideRunEnabled}
+                    onChange={(e) => setWideRunEnabled(e.target.checked)}
+                  />
+                  <label className="form-check-label" htmlFor="wideRule">Wide = 1 Run</label>
+                </div>
+                <div className="form-check form-switch">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    id="nbRule"
+                    checked={noBallRunEnabled}
+                    onChange={(e) => setNoBallRunEnabled(e.target.checked)}
+                  />
+                  <label className="form-check-label" htmlFor="nbRule">No Ball = 1 Run</label>
+                </div>
+              </div>
+            </div>
+
             <button className="btn btn-dark w-100" onClick={() => setMatchStarted(true)}>
               Start Match
             </button>
@@ -553,10 +590,75 @@ export default function App() {
                 Start New Match
               </button>
             )}
+
+            {/* OVER SUMMARY ON RESULT SCREEN */}
+            {!tossing && (
+              <div className="mt-4 text-start">
+                <h5 className="fw-bold mb-3">Match Stats</h5>
+
+                {/* INNINGS 1 */}
+                {innings1Score.history && innings1Score.history.length > 0 && (
+                  <div className="mb-4">
+                    <h6 className="text-muted border-bottom pb-2 mb-2">
+                      Innings 1: {battingFirst} ({innings1Score.runs}/{innings1Score.wickets})
+                    </h6>
+                    {innings1Score.history.map((o, i) => (
+                      <div className="over-premium mb-2" key={i}>
+                        <strong>Over {o.over}</strong> — {o.runs} runs
+                        <div className="mt-2">
+                          {o.balls.map((b, index) => (
+                            <span
+                              key={index}
+                              className={
+                                b === "6" ? "ball-tag ball6" :
+                                  b === "4" ? "ball-tag ball4" :
+                                    b === "W" ? "ball-tag ballW" :
+                                      "ball-tag ballN"
+                              }
+                            >
+                              {b}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* INNINGS 2 */}
+                {innings2Score.history && innings2Score.history.length > 0 && (
+                  <div>
+                    <h6 className="text-muted border-bottom pb-2 mb-2">
+                      Innings 2: {battingFirst === teamA ? teamB : teamA} ({innings2Score.runs}/{innings2Score.wickets})
+                    </h6>
+                    {innings2Score.history.map((o, i) => (
+                      <div className="over-premium mb-2" key={i}>
+                        <strong>Over {o.over}</strong> — {o.runs} runs
+                        <div className="mt-2">
+                          {o.balls.map((b, index) => (
+                            <span
+                              key={index}
+                              className={
+                                b === "6" ? "ball-tag ball6" :
+                                  b === "4" ? "ball-tag ball4" :
+                                    b === "W" ? "ball-tag ballW" :
+                                      "ball-tag ballN"
+                              }
+                            >
+                              {b}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
 
       </div>
-    </div>
+    </div >
   );
 }
