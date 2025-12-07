@@ -315,8 +315,31 @@ export default function App() {
   };
 
   return (
-    <div className={dark ? "dark-theme" : "light-theme"}>
-      <div className="container py-4">
+    <div
+      className={dark ? "dark-theme" : "light-theme min-h-screen w-full bg-white relative"}
+      style={!dark ? { background: 'white', backgroundImage: 'none' } : {}}
+    >
+      {/* Morning Haze Background */}
+      {!dark && (
+        <div
+          className="absolute inset-0 z-0"
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 0,
+            backgroundImage: `
+              radial-gradient(circle at 50% 100%, rgba(253, 224, 71, 0.4) 0%, transparent 60%),
+              radial-gradient(circle at 50% 100%, rgba(251, 191, 36, 0.4) 0%, transparent 70%),
+              radial-gradient(circle at 50% 100%, rgba(244, 114, 182, 0.5) 0%, transparent 80%)
+            `,
+          }}
+        />
+      )}
+
+      <div className="container py-4 position-relative" style={{ zIndex: 1 }}>
 
         <div className="d-flex justify-content-between align-items-center mb-3">
           <h1 className="app-title">Cricket Score</h1>
@@ -659,6 +682,7 @@ export default function App() {
         )}
 
       </div>
-    </div >
-  );
+    </div>
+
+  )
 }
