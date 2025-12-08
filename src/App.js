@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 import confetti from "canvas-confetti";
+import LightRays from "./components/LightRays";
 
 // Helper to load state from local storage
 const loadState = (key, defaultValue) => {
@@ -319,25 +320,21 @@ export default function App() {
       className={dark ? "dark-theme" : "light-theme min-h-screen w-full bg-white relative"}
       style={!dark ? { background: 'white', backgroundImage: 'none' } : {}}
     >
-      {/* Morning Haze Background */}
-      {!dark && (
-        <div
-          className="absolute inset-0 z-0"
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            zIndex: 0,
-            backgroundImage: `
-              radial-gradient(circle at 50% 100%, rgba(253, 224, 71, 0.4) 0%, transparent 60%),
-              radial-gradient(circle at 50% 100%, rgba(251, 191, 36, 0.4) 0%, transparent 70%),
-              radial-gradient(circle at 50% 100%, rgba(244, 114, 182, 0.5) 0%, transparent 80%)
-            `,
-          }}
+      {/* LightRays Background */}
+      <div className="absolute inset-0 z-0" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 0, overflow: 'hidden' }}>
+        <LightRays
+          raysOrigin="top-center"
+          raysColor="#00ffff"
+          raysSpeed={1.5}
+          lightSpread={0.8}
+          rayLength={1.2}
+          followMouse={true}
+          mouseInfluence={0.1}
+          noiseAmount={0.1}
+          distortion={0.05}
+          className="custom-rays"
         />
-      )}
+      </div>
 
       <div className="container py-4 position-relative" style={{ zIndex: 1 }}>
 
